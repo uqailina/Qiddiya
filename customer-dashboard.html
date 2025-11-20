@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1" >
+  <title>Customer dashboard</title>
+  <link rel="stylesheet" href="styles.css" >
+</head>
+<body>
+  <div class="notice">Discover endless fun at Qiddiya – Book your adventure today!</div>
+
+  <!-- ===== Header and Navigation ===== -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a class="brand" href="index.html">
+        <img src="images/Qiddiya.jpg" alt="Qiddiya logo">
+        <span class="brand-name">All About Qiddiya</span>
+      </a>
+
+      <button class="nav-toggle" aria-label="Open Menu">☰</button>
+
+      <ul class="nav-list">
+        <li><a href="index.html">Home page</a></li>
+        <li><a href="services.html">Service</a></li>
+        <li><a class="active" href="customer-dashboard.html">Customer dashboard</a></li>
+        <li><a href="provider-dashboard.html">Provider dashboard</a></li>
+        <li><a href="about.html">About us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+<!-- Hero with real image -->
+<section class="about-hero">
+  <div class="hero-banner">
+    <img src="images/sixflags.jpg" alt="Qiddiya">
+  </div>
+</section>
+
+
+
+
+  <main class="container">
+    <h2 class="page-title">Customer dashboard</h2>
+
+    <section >
+      
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Service Name</th>
+            <th>Date</th>
+            <th>Cost</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+
+
+
+
+        <!-- Dashboard -->
+        <tbody id="req-body">
+          <tr>
+            <td><span >Restaurants</span></td>
+            <td>09/06/2025</td>
+            <td>19 SAR</td>
+            <td><span class="badge ok">Provided</span></td>
+          </tr>
+          <tr>
+            <td><span >Guide Tour</span></td>
+            <td>09/09/2025</td>
+            <td>32 SAR</td>
+            <td><span class="badge warn">Pending</span></td>
+          </tr>
+          <tr>
+            <td><span>Book a Ticket</span></td>
+            <td>10/16/2025</td>
+            <td>12 SAR</td>
+            <td><span class="badge bad">Declined</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <!-- Buttons to Request a Service and Evaluate a Service and Favorite Services-->
+
+
+      <div class="centered" >
+        <a class="btn" href="request.html">Request a Service</a>
+        <a class="btn" href="evaluation.html">Evaluate a Service </a>
+        <a class="btn" href="favorite-services.html">Favorite Services</a>
+
+      </div>
+    </section>
+      </main>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="foot-left">
+          <img src="images/Qiddiya.jpg" alt="Qiddiya logo small">
+        </div>
+
+        <div class="foot-mid">
+          <h5>Contact us</h5>
+          <p>Phone number: +966-555-123-456</p>
+          <p>Email: Qiddiya@gmail.com</p>
+          <p>© Copyright</p>
+        </div>
+
+        <div class="foot-right">
+          <a href="https://twitter.com" class="ico" aria-label="Twitter">
+            <img src="images/x-logo.jpg" alt="X">
+          </a>
+          <a href="https://instagram.com" class="ico" aria-label="Instagram">
+            <img src="images/instagram-logo.jpg" alt="Instagram">
+          </a>
+          <a href="https://wa.me" class="ico" aria-label="WhatsApp">
+            <img src="images/whatsapp-logo.jpg" alt="WhatsApp">
+          </a>
+        </div>
+      </div>
+    </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
