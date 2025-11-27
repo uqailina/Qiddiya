@@ -43,8 +43,7 @@
 
 
 
-
-  <main class="container favorites-page">
+<main class="container favorites-page">
   <nav class="breadcrumbs">
     <a href="customer-dashboard.html">Customer dashboard</a>
     <span class="sep">›</span>
@@ -53,15 +52,17 @@
 
   <h2 class="page-title">Favorite Services</h2>
 
-      <!-- Buttons back to Services -->
+  <!-- NEW: where JS will insert favorite service cards -->
+  <section id="favorites-list" class="cards-grid"></section>
 
-
-  <section class="card empty-state">
+  <!-- Empty state: shown only when there are NO favorites -->
+  <section id="empty-favorites" class="card empty-state">
     <div class="icon">💜</div>
     <p class="empty-text">You don’t have any favorite services yet.</p>
     <a href="services.html" class="btn btn--inline">Go back to Services</a>
   </section>
 </main>
+
 
 
   <footer class="site-footer">

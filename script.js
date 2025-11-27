@@ -2,7 +2,7 @@
 
 console.log("script loaded!");
 
-// --- Back to Top Button (only if the button exists) ---
+
 const backToTop = document.getElementById("backToTop");
 
 if (backToTop) {
@@ -19,16 +19,16 @@ if (backToTop) {
   });
 }
 
-// --- Real-time Clock (only if #clock exists) ---
+
 function updateClock() {
   const clockEl = document.getElementById("clock");
-  if (!clockEl) return;              // <-- protect from null
+  if (!clockEl) return; 
 
   const now = new Date();
   clockEl.textContent = now.toLocaleTimeString();
 }
 
-// Only start the clock if there *is* a #clock on this page
+
 if (document.getElementById("clock")) {
   setInterval(updateClock, 1000);
   updateClock();
@@ -84,14 +84,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    alert(`Thanks, ${name.value.trim()}! Your request has been received.`);
+alert('Thanks, ' + name.value.trim() + '! Your request has been received.');
     form.reset();
   });
 });
+
 //----------------------Shahad----------------------------
 
 // localStorage key for provider services
 const SERVICES_KEY = "providerServices";
+//favorite service IDs will be stored
+const FAVORITES_KEY = "favoriteServices";
 
 // Load services array from localStorage
 function loadServices() {
@@ -247,6 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // ========= PROVIDER DASHBOARD PAGE =========
 
+
 document.addEventListener("DOMContentLoaded", function () {
   const dashList = document.querySelector(".dash-list");
   if (!dashList) return; 
@@ -297,16 +301,15 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 // ========= MANAGE STAFF MEMBERS PAGE =========
 
 document.addEventListener("DOMContentLoaded", function () {
   const msGrid = document.querySelector(".ms-grid");
-  if (!msGrid) return; 
+  if (!msGrid) return;
   const deleteBtn = document.querySelector(".ms-del .btn");
 
   // Add new staff form elements
-  const staffNameInput = document.getElementById("name");  
+  const staffNameInput = document.getElementById("name");
   const staffForm = staffNameInput ? staffNameInput.closest("form") : null;
   const dobInput = document.getElementById("dob");
   const emailInput = document.getElementById("email");
@@ -315,7 +318,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const educationInput = document.getElementById("education");
   const photoInput = document.getElementById("photo");
 
-  const STAFF_KEY = "staffMembers";
+  function getInitialStaff() {
+    const staffArr = [];
+    const rows = msGrid.querySelectorAll(".ms-row");
+
+    rows.forEach((row, index) => {
+      const nameDiv = row.querySelector("div:last-child");
+      const img = row.querySelector("img");
+      const name = nameDiv ? nameDiv.textContent.trim() : "Staff " + (index + 1);
+      const src = img ? img.getAttribute("src") || "" : "";
+
+      staffArr.push({
+        id: Date.now() + index,
+        name: name,
+        imgFileName: src.replace(/^images\//, "")
+      });
+    });
+
+    return staffArr;
+  }
 
   function renderStaff(staffArr) {
     msGrid.innerHTML = "";
@@ -331,7 +352,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const photoDiv = document.createElement("div");
       photoDiv.className = "ms-ph";
       const img = document.createElement("img");
-
 
       const fileName = member.imgFileName || "abdullah.jpg";
       img.src = fileName.startsWith("images/") ? fileName : "images/" + fileName;
@@ -349,41 +369,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function loadStaff() {
-    const stored = localStorage.getItem(STAFF_KEY);
-    if (stored) {
-      try {
-        const arr = JSON.parse(stored);
-        if (Array.isArray(arr)) return arr;
-      } catch (e) {}
-    }
-
-    const staffArr = [];
-    const rows = msGrid.querySelectorAll(".ms-row");
-    rows.forEach((row, index) => {
-      const nameDiv = row.querySelector("div:last-child");
-      const img = row.querySelector("img");
-      const name = nameDiv ? nameDiv.textContent.trim() : "Staff " + (index + 1);
-      const src = img ? img.getAttribute("src") || "" : "";
-      staffArr.push({
-        id: Date.now() + index,
-        name: name,
-        imgFileName: src.replace(/^images\//, "")
-      });
-    });
-
-    return staffArr;
-  }
-
-  function saveStaff(staffArr) {
-    localStorage.setItem(STAFF_KEY, JSON.stringify(staffArr));
-  }
-
-  let staffMembers = loadStaff();
-  saveStaff(staffMembers); 
+  let staffMembers = getInitialStaff();
   renderStaff(staffMembers);
 
-  // Delete button logic 
+  //  Delete button logic 
   if (deleteBtn) {
     deleteBtn.addEventListener("click", function () {
       const checkboxes = msGrid.querySelectorAll("input[type='checkbox']");
@@ -407,12 +396,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!confirmDelete) return;
 
       staffMembers = staffMembers.filter(member => !selectedIds.includes(String(member.id)));
-      saveStaff(staffMembers);
-      renderStaff(staffMembers);
+      renderStaff(staffMembers);   
     });
   }
 
-  //  Add new staff form logic 
+  // ---------- Add new staff ----------
   if (staffForm) {
     staffForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -431,7 +419,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return /[a-zA-Z]/.test(str);
       }
 
-      //  Empty checks and type checks 
       if (!name) {
         errors.push("Name is required.");
       } else if (!hasLetter(name)) {
@@ -468,7 +455,6 @@ document.addEventListener("DOMContentLoaded", function () {
         errors.push("Photo must be an image file.");
       }
 
-      // If any errors show them
       if (errors.length > 0) {
         alert(errors.join("\n"));
         return;
@@ -486,8 +472,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       staffMembers.push(newMember);
-      saveStaff(staffMembers);
-      renderStaff(staffMembers);
+      renderStaff(staffMembers);   
 
       alert("New staff member added: " + name);
 
@@ -496,11 +481,147 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+
+// ================== FAVORITES set up hearts on Services page ==================
+
+// Reset favorites only once per visit
+if (!sessionStorage.getItem("sessionStarted")) {
+  localStorage.removeItem("favoriteServices");
+  sessionStorage.setItem("sessionStarted", "yes");
+}
+
+// Reset added services once per visit
+if (!sessionStorage.getItem("srvSessionStarted")) {
+  localStorage.removeItem(SERVICES_KEY);   
+  sessionStorage.setItem("srvSessionStarted", "yes");
+}
+
+function setupServiceHearts() {
+  const cards = document.querySelectorAll(".service-card");
+
+  if (!cards.length) return;
+
+  const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+
+  cards.forEach(card => {
+    const titleEl = card.querySelector(".s-title");
+    const descEl  = card.querySelector(".s-desc");
+    const priceEl = card.querySelector(".chip");
+    const imgEl   = card.querySelector(".thumb img");
+    const heartCb = card.querySelector(".heart input[type='checkbox']");
+
+    if (!titleEl || !heartCb) return; 
+
+    const name = titleEl.textContent.trim();
+
+    const isFav = favorites.some(s => s.name === name);
+    heartCb.checked = isFav;
+
+    // When user clicks the heart checkbox
+    heartCb.addEventListener("change", () => {
+      if (heartCb.checked) {
+        const serviceObj = {
+          name: name,
+          description: descEl ? descEl.textContent.trim() : "",
+          price: priceEl ? priceEl.textContent.trim() : "",
+          image: imgEl ? imgEl.getAttribute("src") : ""
+        };
+        addFavoriteService(serviceObj);
+      } else {
+        removeFavoriteService(name);
+      }
+    });
+  });
+}
+
+function addFavoriteService(service) {
+  let favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+
+  if (!favorites.some(s => s.name === service.name)) {
+    favorites.push(service);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  }
+}
+
+// Remove a service from favorites by name
+function removeFavoriteService(name) {
+  let favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+  favorites = favorites.filter(s => s.name !== name);
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+}
+// ================== load on Favorite Services page ==================
+function loadFavoriteServices() {
+  const listEl  = document.getElementById("favorites-list");
+  const emptyEl = document.getElementById("empty-favorites");
+
+  if (!listEl || !emptyEl) return;
+
+  const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+
+  if (!favorites.length) {
+    emptyEl.style.display = "block";
+    listEl.innerHTML = "";
+    return;
+  }
+
+  emptyEl.style.display = "none";
+  listEl.innerHTML = "";
+
+  favorites.forEach(service => {
+
+    const card = document.createElement("div");
+    card.classList.add("service-card", "card");
+
+    const thumb = document.createElement("div");
+    thumb.classList.add("thumb");
+
+    if (service.image) {
+      const img = document.createElement("img");
+      img.src = service.image;
+      img.alt = service.name;
+      thumb.appendChild(img);
+    }
+
+    const textBox = document.createElement("div");
+
+    const title = document.createElement("h4");
+    title.classList.add("s-title");
+    title.textContent = service.name;
+
+    const desc = document.createElement("p");
+    desc.classList.add("s-desc");
+    desc.textContent = service.description;
+
+    textBox.appendChild(title);
+    textBox.appendChild(desc);
+
+    const priceBox = document.createElement("div");
+    priceBox.classList.add("price-box");
+
+    const chip = document.createElement("span");
+    chip.classList.add("chip");
+    chip.textContent = service.price;
+
+    priceBox.appendChild(chip);
+
+    card.appendChild(thumb);
+    card.appendChild(textBox);
+    card.appendChild(priceBox);
+
+    listEl.appendChild(card);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupServiceHearts();
+  loadFavoriteServices();
+});
+
+
 //---------------------Norah---------------------------//
 
 //------------------request page--------------------------//
 
-// ===== Request Service Page Script =====
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.form');
   if (!form) return;
@@ -510,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const due      = form.querySelector('input[name="due"]');
   const desc     = form.querySelector('textarea[name="desc"]');
 
-  // Container to display all added requests while staying on this page
+  // C display all added requests while staying on the page
   const requestsContainer = document.createElement('div');
   requestsContainer.id = 'requests-list';
   requestsContainer.className = 'requests-list';
@@ -547,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // --- Due date (not too soon) ---
+    // --- Due date  ---
     if (!dueVal) {
       errors.push('Due date is required.');
     } else {
@@ -555,12 +676,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Example rule: due date must be at least 2 days from today
+      //  due date must be at least 2 days from today
       const minDate = new Date(today);
       minDate.setDate(minDate.getDate() + 2);
 
       if (dueDate < minDate) {
-        errors.push('Due date is too soon. Please choose a date at least 2 days from today.');
+        errors.push(' Please choose a date at least 2 days from today.');
       }
     }
 
@@ -569,13 +690,11 @@ document.addEventListener('DOMContentLoaded', () => {
       errors.push('Request description must be at least 100 characters.');
     }
 
-    // If there are validation errors -> show alert and stop
     if (errors.length > 0) {
       alert('Please fix the following:\n- ' + errors.join('\n- '));
       return;
     }
 
-    // ------- Form is valid: ask user to stay or go back to dashboard -------
     const stayOnPage = confirm(
       `Your request has been sent successfully.\n` +
       `Service: ${serviceVal}\n` +
@@ -585,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 
     if (stayOnPage) {
-      // Display request info on the same page (keep all requests)
+      // keep all requests
       const card = document.createElement('div');
       card.className = 'request-card';
       card.innerHTML = `
@@ -596,19 +715,18 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       requestsContainer.appendChild(card);
 
-      // Reset form so customer can add another request
+      // customer can add another request
       form.reset();
     } else {
-      // Go back to customer dashboard (nothing is stored permanently)
+      //  back to customer dashboard 
       window.location.href = 'customer-dashboard.html';
     }
   });
 
-  // Optional: clear all current errors on reset
+  //  clear all current errors on reset
   const cancelBtn = form.querySelector('.actions button[type="reset"]');
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
-      // nothing persistent, form will just reset
     });
   }
 });
@@ -619,7 +737,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //----------------Eval Page------------------------//
 
 
-// ===== Service Evaluation Page Script =====
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.form');
   if (!form) return;
@@ -629,13 +746,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const stars         = form.querySelectorAll('.star');
   let currentRating   = 0;
 
-  // ---- Helper: clear highlight for inputs ----
   function clearHighlights() {
     serviceSelect.classList.remove('error-field');
     feedback.classList.remove('error-field');
   }
 
-  // ---- Star rating behavior ----
+  // ---- Star rating  ----
   stars.forEach((star, index) => {
     const ratingValue = index + 1;
     star.style.cursor = 'pointer';
@@ -685,18 +801,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // ----- Valid form: check rating -----
+    // ----- check rating -----
     if (currentRating >= 4) {
       alert('Thank you for your feedback! We are glad you enjoyed this service.');
     } else {
       alert('We are sorry that your experience was not perfect. We will work hard to improve our services.');
     }
 
-    // Move to customer dashboard (no need to store the review)
+    // Move to customer dashboard 
     window.location.href = 'customer-dashboard.html';
   });
 
-  // Optional reset: clear visual highlights
   const cancelBtn = form.querySelector('.actions button[type="reset"]');
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
@@ -704,5 +819,32 @@ document.addEventListener('DOMContentLoaded', () => {
       stars.forEach(s => s.classList.remove('active'));
       currentRating = 0;
     });
+  }
+});
+
+
+//-------Theme-------
+const themeBtn = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark-theme");
+  themeBtn.textContent = "☀️";
+  themeBtn.classList.remove("light");
+  themeBtn.classList.add("dark");
+}
+
+themeBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-theme");
+
+  if (document.body.classList.contains("dark-theme")) {
+    themeBtn.textContent = "☀️";
+    themeBtn.classList.remove("light");
+    themeBtn.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    themeBtn.textContent = "🌙";
+    themeBtn.classList.remove("dark");
+    themeBtn.classList.add("light");
+    localStorage.removeItem("theme");
   }
 });
